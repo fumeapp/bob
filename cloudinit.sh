@@ -139,6 +139,8 @@ After=network.target auditd.service
 [Service]
 ExecStart=/bin/php /home/ec2-user/bob/artisan horizon
 Restart=always
+User=ec2-user
+Group=ec2-user
 
 [Install]
 WantedBy=multi-user.target

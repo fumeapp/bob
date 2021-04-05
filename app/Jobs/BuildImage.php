@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class BuildImage implements ShouldQueue
 {
@@ -44,7 +45,7 @@ class BuildImage implements ShouldQueue
         $service->unzip('layer');
         $service->unzip('code');
         $service->copyAssets();
-        $service->build();
+        Log::info(json_encode($service->build()));
         $digest = $service->push();
         $service->update($digest);
         $service->cleanup();
