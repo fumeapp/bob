@@ -52,7 +52,28 @@
         ],
         "queue": [
           "@php artisan queue:listen"
-        ]
+        ],
+
+      "storage":  [
+        "mkdir storage",
+        "mkdir storage/framework storage/framework/cache storage/framework/sessions storage/framework/testing storage/framework/views"
+      ],
+
+      "staging": [
+        "git pull",
+        "composer install --no-ansi",
+        "aws s3 cp s3://fume-vault/.env.staging .env",
+        "@php artisan config:clear",
+        "@php artisan cache:clear"
+      ],
+
+      "production": [
+        "git pull",
+        "composer install --no-ansi",
+        "aws s3 cp s3://fume-vault/.env.production .env",
+        "@php artisan config:clear",
+        "@php artisan cache:clear"
+      ]
     },
   "extra": {
         "laravel": {

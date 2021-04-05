@@ -47,6 +47,6 @@ class ImageDto
 
     #[Pure] public function tag(): string
     {
-        return "{$this->domain()}/{$this->repository}:latest";
+        return "{$this->domain()}/{$this->repository}:dep-{$this->depId}";
     }
 }
