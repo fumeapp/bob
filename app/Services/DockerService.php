@@ -104,7 +104,7 @@ class DockerService
         return Http
             ::withToken($this->dto->token)
             ->put($this->dto->apiUrl . "/project/{$this->dto->projectId}/dep/{$this->dto->depId}", [
-            'status' => 'CONTAINER_COMPLETE',
+            'status' => 'IMAGE_COMPLETE',
             'digest' => $digest,
         ]);
     }
