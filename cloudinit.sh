@@ -121,6 +121,7 @@ systemctl restart nginx.service
 # Install php-redis (no available module)
 git clone git://github.com/nicolasff/phpredis.git
 cd phpredis
+phpize
 ./configure
 make
 make install
