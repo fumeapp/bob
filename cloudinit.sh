@@ -27,7 +27,9 @@ hostname $HOSTNAME
 
 yum -y update
 amazon-linux-extras install nginx1.12 php8.0
-yum -y install git docker php-fpm
+yum -y install git docker php-fpm php-mbstring php-process php-xml php-devel gcc
+
+# yum -y install git php74 php74-php-cli php74-php-pear php74-php-mbstring php74-php-bcmath php74-php-pecl-zip php74-php-fpm php74-php-pdo php74-php-mysqlnd
 
 usermod -aG docker ec2-user
 
@@ -93,12 +95,12 @@ pm.start_servers = 5
 pm.min_spare_servers = 5
 pm.max_spare_servers = 35
 slowlog = /var/log/php-fpm/www-slow.log
-php_admin_value[error_log] = /var/opt/remi/php80/log/php-fpm/www-error.log
+php_admin_value[error_log] = /var/log/php-fpm/www-error.log
 php_admin_flag[log_errors] = on
 php_value[session.save_handler] = files
-php_value[session.save_path]    = /var/opt/remi/php80/lib/php/session
-php_value[soap.wsdl_cache_dir]  = /var/opt/remi/php80/lib/php/wsdlcache
-' > /etc/opt/remi/php80/php-fpm.d/www.conf
+php_value[session.save_path]    = /var/lib/php/session
+php_value[soap.wsdl_cache_dir]  = /var/lib/php/wsdlcache
+' > /etc/php-fpm.d/www.conf
 
 # php.ini updates
 
@@ -116,6 +118,16 @@ done
 systemctl restart php-fpm.service
 systemctl restart nginx.service
 
+# Install php-redis (no available module)
+git clone git://github.com/nicolasff/phpredis.git
+cd phpredis
+./configure
+make
+make install
+echo "extension=redis.so" > /etc/php.d/20-redis.ini
+
+
+
 # Install Composer
 curl -sS https://getcomposer.org/installer | HOME="/home/ec2-user" php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -127,7 +139,6 @@ ssh-keyscan github.com >> ~/.ssh/known_hosts
 git clone $REPO
 cd $SERVICE
 git checkout $ENV
-/usr/local/bin/composer storage
 /usr/local/bin/composer $ENV
 "
 
