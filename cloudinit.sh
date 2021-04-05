@@ -28,7 +28,7 @@ hostname $HOSTNAME
 echo "1" | sudo passwd --stdin root
 
 yum -y update
-amazon-linux-extras install nginx1.12 php8.0 redis4.0
+amazon-linux-extras install nginx1.12 php8.0
 yum -y install git docker php-fpm php-mbstring php-process php-xml php-devel gcc
 
 # yum -y install git php74 php74-php-cli php74-php-pear php74-php-mbstring php74-php-bcmath php74-php-pecl-zip php74-php-fpm php74-php-pdo php74-php-mysqlnd
@@ -117,9 +117,6 @@ do
  sed -i "s/^\($key\).*/\1 $(eval echo = \${$key})/" /etc/php.ini
 done
 
-systemctl restart php-fpm.service
-systemctl restart nginx.service
-
 # Install php-redis (no available module)
 git clone git://github.com/nicolasff/phpredis.git
 cd phpredis
@@ -129,7 +126,26 @@ make
 make install
 echo "extension=redis.so" > /etc/php.d/20-redis.ini
 
+systemctl restart php-fpm.service
+systemctl restart nginx.service
 
+# setup horizon with systemd
+
+echo "
+[Unit]
+Description=Laravel Horizon Queue Manager
+After=network.target auditd.service
+
+[Service]
+ExecStart=/bin/php /home/ec2-user/bob/artisan horizon
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+" > /lib/systemd/system/horizon.service
+
+systemctl enable horizon.service
+systemctl start horizon.service
 
 # Install Composer
 curl -sS https://getcomposer.org/installer | HOME="/home/ec2-user" php -- --install-dir=/usr/local/bin --filename=composer
