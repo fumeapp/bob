@@ -41,12 +41,13 @@ class BuildImage implements ShouldQueue
         $service->makeDirectory();
         $service->download('layer');
         $service->download('code');
-
         $service->unzip('layer');
         $service->unzip('code');
-
-        // ray("cp -rp {$resourceDir} ${dir}./fume");
-        // exec("cp -rp {$resourceDir} ${dir}./fume");
+        $service->copyAssets();
+        $service->build();
+        $digest = $service->push();
+        $service->update($digest);
+        $service->cleanup();
 
     }
 }
