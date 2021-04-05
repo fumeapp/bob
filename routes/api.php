@@ -15,4 +15,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 
+Route::get('/', fn() => response('Pong', 200));
+
 Route::apiResource('image', ImageController::class);
