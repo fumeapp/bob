@@ -25,10 +25,13 @@ chown -R ec2-user:ec2-user /home/ec2-user/.ssh/
 HOSTNAME=$SERVICE-$ENV
 hostname $HOSTNAME
 
-echo "1" | sudo passwd --stdin root
-
 yum -y update
 amazon-linux-extras install nginx1.12 php8.0
+
+sudo systemctl enable amazon-ssm-agent
+sudo systemctl start amazon-ssm-agent
+
+
 yum -y install git docker php-fpm php-mbstring php-process php-xml php-devel gcc
 
 # yum -y install git php74 php74-php-cli php74-php-pear php74-php-mbstring php74-php-bcmath php74-php-pecl-zip php74-php-fpm php74-php-pdo php74-php-mysqlnd
