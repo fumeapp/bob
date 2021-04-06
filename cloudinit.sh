@@ -146,9 +146,6 @@ Group=ec2-user
 WantedBy=multi-user.target
 " > /lib/systemd/system/horizon.service
 
-systemctl enable horizon.service
-systemctl start horizon.service
-
 # Install Composer
 curl -sS https://getcomposer.org/installer | HOME="/home/ec2-user" php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -168,3 +165,5 @@ chmod g+x /home/ec2-user
 chmod g+x /home/ec2-user/$SERVICE
 service nginx restart
 service docker start
+systemctl enable horizon.service
+systemctl start horizon.service
