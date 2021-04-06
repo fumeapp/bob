@@ -29,7 +29,7 @@ class ImageController extends Controller
      */
     public function store(Request $request): Response|JsonResponse
     {
-        dispatch(new BuildImage(new ImageDto($request->all())));
+        BuildImage::dispatch(new ImageDto($request->all()));
         return $this->success('dispatched');
     }
 
