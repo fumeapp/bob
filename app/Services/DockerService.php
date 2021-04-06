@@ -3,6 +3,7 @@ namespace App\Services;
 
 use App\DTO\ImageDto;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use JetBrains\PhpStorm\ArrayShape;
 
 class DockerService
@@ -96,6 +97,7 @@ class DockerService
                 'tag' => $this->dto->tag(),
             ]);
         preg_match('/digest: sha256:([0-9a-f]{64})/', $result->body(), $matches);
+        Log::info($result->body());
         return $matches[1];
     }
 
