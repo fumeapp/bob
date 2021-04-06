@@ -45,7 +45,7 @@ class BuildImage implements ShouldQueue
         $service->unzip('layer');
         $service->unzip('code');
         $service->copyAssets();
-        Log::info(json_encode($service->build()));
+        $service->build();
         $digest = $service->push();
         $service->update($digest);
         $service->cleanup();

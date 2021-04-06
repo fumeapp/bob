@@ -98,6 +98,7 @@ class DockerService
             ]);
         preg_match('/digest: sha256:([0-9a-f]{64})/', $result->body(), $matches);
         Log::info($result->body());
+        Log::info($matches);
         return $matches[1];
     }
 
