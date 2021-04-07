@@ -50,7 +50,10 @@
         "serve": [
             "@php artisan serve --port=4000"
         ],
-        "queue": [
+        "horizon": [
+            "@php artisan horizon"
+        ],
+      "queue": [
           "@php artisan queue:listen"
         ],
 

@@ -44,6 +44,10 @@ class ImageDto
     {
         return "{$this->identity}.dkr.ecr.{$this->region}.amazonaws.com";
     }
+    public function depUrl(): string
+    {
+        return "/project/{$this->projectId}/dep/{$this->depId}";
+    }
 
     #[Pure] public function tag(): string
     {

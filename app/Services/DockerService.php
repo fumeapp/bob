@@ -2,6 +2,8 @@
 namespace App\Services;
 
 use App\DTO\ImageDto;
+use Exception;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use JetBrains\PhpStorm\ArrayShape;
@@ -67,6 +69,11 @@ class DockerService
         $dockerfile = resource_path('nuxt.Dockerfile');
         $tag = $this->dto->tag();
         exec("$binary build --progress plain -t $tag -f $dockerfile {$this->directory}/ 2>&1", $output, $result);
+
+        if ($result === 1) {
+            $this->rm();
+            $this->fail('Error building image', $output);
+        }
         return [
             'output' => $output,
             'result_code' => $result,
@@ -97,8 +104,11 @@ class DockerService
                 'tag' => $this->dto->tag(),
             ]);
         preg_match('/digest: sha256:([0-9a-f]{64})/', $result->body(), $matches);
-        Log::info($result->body());
-        Log::info($matches);
+
+        if (!isset($matches[1])) {
+            $this->fail('Error pushing image', $result->body());
+        }
+
         return $matches[1];
     }
 
@@ -112,12 +122,37 @@ class DockerService
         ]);
     }
 
-    public function cleanup(): string
+    private function fail(string $reason, mixed $payload): Response
     {
-        exec("rm -rf {$this->directory}");
+        $this->rm();
+        Http
+            ::withToken($this->dto->token)
+            ->put($this->dto->apiUrl . $this->dto->depUrl(), [
+                'status' => 'FAILURE',
+                'failure' => [
+                    'message' => $reason,
+                    'detail' => $payload,
+                ],
+            ]);
+        throw new Exception($reason);
+    }
+
+    private function rm(): string
+    {
+        return exec("rm -rf {$this->directory}");
+    }
+
+    private function removeImage(): string
+    {
         return Http
             ::withOptions($this->options)
             ->delete($this->uri . "/images/{$this->dto->tag()}")
             ->body();
+    }
+
+    public function cleanup(): string
+    {
+        $this->rm();
+        return $this->removeImage();
     }
 }
