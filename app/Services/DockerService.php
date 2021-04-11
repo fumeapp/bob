@@ -42,9 +42,19 @@ class DockerService
         return mkdir($this->directory);
     }
 
-    public function download($type): string
+    public function download($type): array
     {
-        return exec("{$this->dto->sts->toEnv()} aws s3 cp s3://{$this->dto->s3->bucket}/{$this->dto->s3->{$type}} {$this->directory}");
+        exec("{$this->dto->sts->toEnv()} aws s3 cp s3://{$this->dto->s3->bucket}/{$this->dto->s3->{$type}} {$this->directory}", $output, $result);
+
+        if ($result === 1) {
+            $this->rm();
+            $this->fail("Error copying {$type} folder", $output);
+        }
+
+        return [
+            'output' => $output,
+            'result_code' => $result,
+        ];
     }
 
     public function unzip($type): string
