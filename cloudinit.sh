@@ -32,9 +32,7 @@ sudo systemctl enable amazon-ssm-agent
 sudo systemctl start amazon-ssm-agent
 
 
-yum -y install git docker php-fpm php-mbstring php-process php-xml php-devel gcc
-
-# yum -y install git php74 php74-php-cli php74-php-pear php74-php-mbstring php74-php-bcmath php74-php-pecl-zip php74-php-fpm php74-php-pdo php74-php-mysqlnd
+yum -y install git docker php-fpm php-mbstring php-process php-xml php-devel gcc libyaml-devel
 
 usermod -aG docker ec2-user
 
@@ -128,6 +126,16 @@ phpize
 make
 make install
 echo "extension=redis.so" > /etc/php.d/20-redis.ini
+
+git clone https://github.com/php/pecl-file_formats-yaml.git
+cd pecl-file_formats-yaml
+phpize
+./configure
+make
+make install
+echo "extension=yaml.so" > /etc/php.d/20-yaml.ini
+
+
 
 systemctl restart php-fpm.service
 systemctl restart nginx.service
