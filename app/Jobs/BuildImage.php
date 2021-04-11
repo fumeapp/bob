@@ -16,6 +16,12 @@ class BuildImage implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
+     * The number of seconds the job cna run before timing out.
+     * @var int
+     */
+    public int $timeout = 120;
+
+    /**
      * @var ImageDto
      */
     private ImageDto $dto;
