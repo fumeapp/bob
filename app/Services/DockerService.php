@@ -89,7 +89,7 @@ class DockerService
 
             foreach ($dockerFileContents as $key=>$value) {
                 if ($value === 'COPY static /var/task/static') {
-                    $dockerFileContents[$key] = "COPY {$srcDir}static /var/task/{$srcDir}static";
+                    $dockerFileContents[$key] = "COPY {$srcDir}static /var/task/static";
                 }
             }
 
