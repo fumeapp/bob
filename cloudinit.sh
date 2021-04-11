@@ -5,7 +5,7 @@
 # Copyright (C) 2019 kevin olson <ko@kittyhawk.io>
 #
 SERVICE=bob
-ENV=staging
+ENV=production
 REPO=git@github.com:fumeapp/bob.git
 PORT=4000
 MAXSIZE=25G
