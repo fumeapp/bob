@@ -5,7 +5,6 @@ use App\DTO\ImageDto;
 use Exception;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use JetBrains\PhpStorm\ArrayShape;
 
 class DockerService
@@ -42,9 +41,19 @@ class DockerService
         return mkdir($this->directory);
     }
 
-    public function download($type): string
+    public function download($type): array
     {
-        return exec("{$this->dto->sts->toEnv()} aws s3 cp s3://{$this->dto->s3->bucket}/{$this->dto->s3->{$type}} {$this->directory}");
+        exec("{$this->dto->sts->toEnv()} aws s3 cp s3://{$this->dto->s3->bucket}/{$this->dto->s3->{$type}} {$this->directory}", $output, $result);
+
+        if ($result === 1) {
+            $this->rm();
+            $this->fail("Error copying {$type} folder", $output);
+        }
+
+        return [
+            'output' => $output,
+            'result_code' => $result,
+        ];
     }
 
     public function unzip($type): string
@@ -67,6 +76,27 @@ class DockerService
     {
         $binary = config('docker.binary');
         $dockerfile = resource_path('nuxt.Dockerfile');
+        $config = yaml_parse_file($this->directory . '/fume.yml');
+
+        if (isset($config['nuxt']) && isset($config['nuxt']['srcDir'])) {
+
+            $dockerFileContents = explode("\n", file_get_contents($dockerfile));
+
+            $srcDir = $config[ 'nuxt' ][ 'srcDir' ];
+            if (substr($srcDir, -1) !== '/') {
+                $srcDir .= '/';
+            }
+
+            foreach ($dockerFileContents as $key=>$value) {
+                if ($value === 'COPY static /var/task/static') {
+                    $dockerFileContents[$key] = "COPY {$srcDir}static /var/task/{$srcDir}static";
+                }
+            }
+
+            $dockerfile = "{$this->directory}/Dockerfile";
+            file_put_contents($dockerfile, implode("\n", $dockerFileContents));
+        }
+
         $tag = $this->dto->tag();
         exec("$binary build --progress plain -t $tag -f $dockerfile {$this->directory}/ 2>&1", $output, $result);
 
