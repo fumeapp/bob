@@ -67,7 +67,8 @@
         "composer install --no-ansi",
         "aws s3 cp s3://fume-vault/.env.staging .env",
         "@php artisan config:clear",
-        "@php artisan cache:clear"
+        "@php artisan cache:clear",
+        "sudo service horizon restart"
       ],
 
       "production": [
@@ -75,7 +76,8 @@
         "composer install --no-ansi",
         "aws s3 cp s3://fume-vault/.env.production .env",
         "@php artisan config:clear",
-        "@php artisan cache:clear"
+        "@php artisan cache:clear",
+        "sudo service horizon restart"
       ]
     },
   "extra": {
