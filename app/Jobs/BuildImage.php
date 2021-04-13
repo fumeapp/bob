@@ -19,7 +19,7 @@ class BuildImage implements ShouldQueue
      * The number of seconds the job cna run before timing out.
      * @var int
      */
-    public int $timeout = 120;
+    public int $timeout = 300;
 
     /**
      * @var ImageDto
