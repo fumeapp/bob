@@ -19,7 +19,7 @@ class ImageDto
      * @var string ECR Repository name
      */
     public string $repository;
-    public int $identity;
+    public string $identity;
     public int $projectId;
     public int $depId;
     public S3Dto $s3;
