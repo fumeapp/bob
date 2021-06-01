@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\DTO\ImageDto;
 use App\Services\DockerService;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -19,7 +20,7 @@ class BuildImage implements ShouldQueue
      * The number of seconds the job cna run before timing out.
      * @var int
      */
-    public int $timeout = 300;
+    public int $timeout = 400;
 
     /**
      * @var ImageDto
@@ -40,6 +41,7 @@ class BuildImage implements ShouldQueue
      * Execute the job.
      *
      * @return void
+     * @throws Exception
      */
     public function handle()
     {
@@ -54,7 +56,7 @@ class BuildImage implements ShouldQueue
         $service->build();
         $digest = $service->push();
         $service->update($digest);
-        $service->cleanup();
+        // $service->cleanup();
 
     }
 }

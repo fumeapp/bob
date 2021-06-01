@@ -23,7 +23,7 @@ class ImageDto
     public int $projectId;
     public int $depId;
     public S3Dto $s3;
-    public string $frameowrk;
+    public string $framework;
 
     /**
      * @var string Fume API URL
@@ -33,7 +33,7 @@ class ImageDto
     #[Pure] public function __construct($args) {
         $this->sts = new StsDto($args['sts']);
         $this->s3 = new S3Dto($args['s3']);
-        $this->framework = new S3Dto($args['framework']);
+        $this->framework = $args['framework'];
         $this->token = $args['token'];
         $this->region = $args['region'];
         $this->repository = $args['repository'];
