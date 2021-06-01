@@ -63,6 +63,11 @@ class DockerService
 
     public function copyAssets(): string
     {
+        if ($this->dto->framework === 'NestJS') {
+            $assets = resource_path('nest');
+            exec("unzip $assets/node_modules.zip {$this->directory}/node_modules");
+            return exec("cp -r $assets/fume.js {$this->directory}/dist/fume.js");
+        }
         $assets = resource_path('nuxt');
         return exec("cp -r $assets {$this->directory}/.fume");
     }
