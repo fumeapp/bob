@@ -56,7 +56,7 @@ class BuildImage implements ShouldQueue
         $service->build();
         $digest = $service->push();
         $service->update($digest);
-        // $service->cleanup();
+        $service->cleanup();
 
     }
 }
