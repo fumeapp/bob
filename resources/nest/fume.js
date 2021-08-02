@@ -11,9 +11,9 @@ const serverless_express_1 = __importDefault(require("@vendia/serverless-express
 const express_1 = __importDefault(require("express"));
 let app_module_1
 if (fs.existsSync('app.module.js'))
-  const app_module_1 = require("./app.module");
+  app_module_1 = require("./app.module");
 if (fs.existsSync('./src/app.module.js'))
-  const app_module_1 = require("./src/app.module");
+  app_module_1 = require("./src/app.module");
 async function bootstrap() {
   if (!cachedServer) {
     const expressApp = express_1.default();
