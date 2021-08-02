@@ -11,8 +11,10 @@ const express_1 = __importDefault(require("express"));
 let app_module_1
 try {
   app_module_1 = require("./app.module");
+  console.log('from app.module', app_module_1)
 } catch (e) {
-  app_module_1 = require("./app.module");
+  app_module_1 = require("./main");
+  console.log('from main', app_module_1)
 }
 let cachedServer;
 async function bootstrap() {
