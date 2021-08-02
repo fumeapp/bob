@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
 const core_1 = require("@nestjs/core");
 const platform_express_1 = require("@nestjs/platform-express");
-const fs = require('node/fs')
+const fs = require('fs')
 const serverless_express_1 = __importDefault(require("@vendia/serverless-express"));
 const express_1 = __importDefault(require("express"));
 let app_module_1
