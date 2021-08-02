@@ -4,14 +4,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
+const fs = require('fs')
 const core_1 = require("@nestjs/core");
 const platform_express_1 = require("@nestjs/platform-express");
 const serverless_express_1 = __importDefault(require("@vendia/serverless-express"));
 const express_1 = __importDefault(require("express"));
-try {
-  const app_module_1 = require("./app.module");
-} catch (e) {
-  const app_module_1 = require("./main");
+let app_module_1
+if (fs.existsSync('./app.module.js'))
+  app_module_1 = require("./app.module");
+else {
+  app_module_1 = require("./main");
 }
 let cachedServer;
 async function bootstrap() {
