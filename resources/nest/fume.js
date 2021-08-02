@@ -6,10 +6,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
 const core_1 = require("@nestjs/core");
 const platform_express_1 = require("@nestjs/platform-express");
+const fs = require('node/fs')
 const serverless_express_1 = __importDefault(require("@vendia/serverless-express"));
 const express_1 = __importDefault(require("express"));
-const app_module_1 = require("./app.module");
-let cachedServer;
+let app_module_1
+if (fs.existsSync('app.module.js'))
+  const app_module_1 = require("./app.module");
+if (fs.existsSync('./src/app.module.js'))
+  const app_module_1 = require("./src/app.module");
 async function bootstrap() {
   if (!cachedServer) {
     const expressApp = express_1.default();
