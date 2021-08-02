@@ -11,7 +11,7 @@ const express_1 = __importDefault(require("express"));
 try {
   const app_module_1 = require("./app.module");
 } catch (e) {
-  const app_AppModule_1 = require("./main");
+  const app_module_1 = require("./main");
 }
 let cachedServer;
 async function bootstrap() {
