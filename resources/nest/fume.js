@@ -14,6 +14,8 @@ if (fs.existsSync('app.module.js'))
   app_module_1 = require("./app.module");
 if (fs.existsSync('./src/app.module.js'))
   app_module_1 = require("./src/app.module");
+let cachedServer
+
 async function bootstrap() {
   if (!cachedServer) {
     const expressApp = express_1.default();
@@ -24,8 +26,10 @@ async function bootstrap() {
   }
   return cachedServer;
 }
+
 const handler = async (event, context, callback) => {
   const server = await bootstrap();
   return server(event, context, callback);
 };
+
 exports.handler = handler;
