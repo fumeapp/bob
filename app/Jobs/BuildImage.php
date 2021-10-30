@@ -48,15 +48,19 @@ class BuildImage implements ShouldQueue
 
         $service = (new DockerService())->setDto($this->dto);
         $service->makeDirectory();
-        $service->download('layer');
-        $service->download('code');
-        $service->unzip('layer');
-        $service->unzip('code');
+        if ($this->dto->nitro) {
+            $service->download('server');
+        } else {
+            $service->download('layer');
+            $service->download('code');
+            $service->unzip('layer');
+            $service->unzip('code');
+        }
         $service->copyAssets();
         $service->build();
         $digest = $service->push();
         $service->update($digest);
-        $service->cleanup();
+        // $service->cleanup();
 
     }
 }
