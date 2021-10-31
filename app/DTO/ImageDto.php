@@ -35,7 +35,7 @@ class ImageDto
         $this->sts = new StsDto($args['sts']);
         $this->s3 = new S3Dto($args['s3']);
         $this->framework = $args['framework'];
-        $this->nitro = $args['nitro'];
+        $this->nitro = $args['nitro'] ?? false;
         $this->token = $args['token'];
         $this->region = $args['region'];
         $this->repository = $args['repository'];
