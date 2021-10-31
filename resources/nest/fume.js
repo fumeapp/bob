@@ -8,12 +8,15 @@ const core_1 = require("@nestjs/core");
 const platform_express_1 = require("@nestjs/platform-express");
 const serverless_express_1 = __importDefault(require("@vendia/serverless-express"));
 const express_1 = __importDefault(require("express"));
+let app_module_1
 try {
-  const app_module_1 = require("./app.module");
+  app_module_1 = require("./app.module.js");
 } catch (e) {
-  const app_AppModule_1 = require("./main");
+  app_module_1 = require("./src/app.module.js");
 }
-let cachedServer;
+
+let cachedServer
+
 async function bootstrap() {
   if (!cachedServer) {
     const expressApp = express_1.default();
@@ -24,8 +27,10 @@ async function bootstrap() {
   }
   return cachedServer;
 }
+
 const handler = async (event, context, callback) => {
   const server = await bootstrap();
   return server(event, context, callback);
 };
+
 exports.handler = handler;
