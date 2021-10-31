@@ -43,7 +43,11 @@ class DockerService
 
     public function download($type): array
     {
-        exec("{$this->dto->sts->toEnv()} aws s3 cp s3://{$this->dto->s3->bucket}/{$this->dto->s3->{$type}} {$this->directory}", $output, $result);
+        if ($type === 'server') {
+            exec("{$this->dto->sts->toEnv()} aws s3 cp s3://{$this->dto->s3->bucket}/server {$this->directory}/server --recursive", $output, $result);
+        } else {
+            exec("{$this->dto->sts->toEnv()} aws s3 cp s3://{$this->dto->s3->bucket}/{$this->dto->s3->{$type}} {$this->directory}", $output, $result);
+        }
 
         if ($result === 1) {
             $this->rm();
@@ -63,6 +67,10 @@ class DockerService
 
     public function copyAssets(): string
     {
+        if ($this->dto->nitro) {
+            $assets = resource_path('nitro.js');
+            return exec("cp -r $assets {$this->directory}/fume.js");
+        }
         if ($this->dto->framework === 'NestJS') {
             $assets = resource_path('nest');
             exec("unzip -o $assets/node_modules.zip -d {$this->directory}");
@@ -83,34 +91,36 @@ class DockerService
     #[ArrayShape(['output' => "", 'result_code' => ""])] public function build(): array
     {
         $binary = config('docker.binary');
-        if ($this->dto->framework === 'NestJS') {
+        if ($this->dto->nitro) {
+            $dockerfile = resource_path('nuxt-nitro.Dockerfile');
+        } elseif ($this->dto->framework === 'NestJS') {
             $dockerfile = resource_path('nest.Dockerfile');
         } else {
             $dockerfile = resource_path('nuxt.Dockerfile');
         }
-        $config = yaml_parse_file($this->directory . '/fume.yml');
+        if (!$this->dto->nitro) {
+            $config = yaml_parse_file($this->directory . '/fume.yml');
+            if (isset($config[ 'nuxt' ]) && isset($config[ 'nuxt' ][ 'srcDir' ])) {
+                $dockerFileContents = explode("\n", file_get_contents($dockerfile));
 
-        if (isset($config['nuxt']) && isset($config['nuxt']['srcDir'])) {
-
-            $dockerFileContents = explode("\n", file_get_contents($dockerfile));
-
-            $srcDir = $config[ 'nuxt' ][ 'srcDir' ];
-            if (substr($srcDir, -1) !== '/') {
-                $srcDir .= '/';
-            }
-
-            foreach ($dockerFileContents as $key=>$value) {
-                if ($value === 'COPY static /var/task/static') {
-                    $dockerFileContents[$key] = "COPY {$srcDir}static /var/task/static";
+                $srcDir = $config[ 'nuxt' ][ 'srcDir' ];
+                if (!str_ends_with($srcDir, '/')) {
+                    $srcDir .= '/';
                 }
-            }
 
-            $dockerfile = "{$this->directory}/Dockerfile";
-            file_put_contents($dockerfile, implode("\n", $dockerFileContents));
+                foreach ($dockerFileContents as $key => $value) {
+                    if ($value === 'COPY static /var/task/static') {
+                        $dockerFileContents[ $key ] = "COPY {$srcDir}static /var/task/static";
+                    }
+                }
+
+                $dockerfile = "{$this->directory}/Dockerfile";
+                file_put_contents($dockerfile, implode("\n", $dockerFileContents));
+            }
         }
 
         $tag = $this->dto->tag();
-        exec("$binary build --progress plain -t $tag -f $dockerfile {$this->directory}/ 2>&1", $output, $result);
+        exec("$binary build --platform linux/amd64 --progress plain -t $tag -f $dockerfile $this->directory/ 2>&1", $output, $result);
 
         if ($result === 1) {
             $this->rm();
