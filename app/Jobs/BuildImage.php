@@ -43,12 +43,16 @@ class BuildImage implements ShouldQueue
      * @return void
      * @throws Exception
      */
-    public function handle()
+    public function handle(): void
     {
 
         $service = (new DockerService())->setDto($this->dto);
         $service->makeDirectory();
-        if ($this->dto->nitro) {
+
+        if ($this->dto->framework === 'Tonic') {
+            $service->download('code');
+            $service->unzip('code');
+        } else if ($this->dto->nitro) {
             $service->download('server');
         } else {
             $service->download('layer');
@@ -56,7 +60,9 @@ class BuildImage implements ShouldQueue
             $service->unzip('layer');
             $service->unzip('code');
         }
-        $service->copyAssets();
+        if ($this->dto->framework !== 'Tonic') {
+            $service->copyAssets();
+        }
         $service->build();
         $digest = $service->push();
         $service->update($digest);

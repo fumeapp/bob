@@ -3,6 +3,7 @@ namespace App\Services;
 
 use App\DTO\ImageDto;
 use Exception;
+use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use JetBrains\PhpStorm\ArrayShape;
@@ -51,7 +52,7 @@ class DockerService
 
         if ($result === 1) {
             $this->rm();
-            $this->fail("Error copying {$type} folder", $output);
+            $this->fail("Error copying {$type} as s3://{$this->dto->s3->bucket}/{$this->dto->s3->{$type}}", $output);
         }
 
         return [
@@ -62,7 +63,8 @@ class DockerService
 
     public function unzip($type): string
     {
-        return exec("unzip {$this->directory}/{$this->dto->s3->{$type}} -d {$this->directory}/");
+       $result = exec("unzip {$this->directory}/{$this->dto->s3->{$type}} -d {$this->directory}/");
+       return $result;
     }
 
     public function copyAssets(): string
@@ -95,6 +97,8 @@ class DockerService
             $dockerfile = resource_path('nuxt-nitro.Dockerfile');
         } elseif ($this->dto->framework === 'NestJS') {
             $dockerfile = resource_path('nest.Dockerfile');
+        } elseif ($this->dto->framework === 'Tonic') {
+            $dockerfile = resource_path('tonic.Dockerfile');
         } else {
             $dockerfile = resource_path('nuxt.Dockerfile');
         }
@@ -164,7 +168,7 @@ class DockerService
         return $matches[1];
     }
 
-    public function update(string $digest)
+    public function update(string $digest): PromiseInterface|Response
     {
         return Http
             ::withToken($this->dto->token)
@@ -174,7 +178,10 @@ class DockerService
         ]);
     }
 
-    private function fail(string $reason, mixed $payload): Response
+    /**
+     * @throws Exception
+     */
+    private function fail(string $reason, mixed $payload): void
     {
         $this->rm();
         Http

@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0",
+        "ext-yaml": "*",
         "acidjazz/metapi": "^2.1",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
@@ -14,8 +15,7 @@
         "laravel/horizon": "^5.7",
         "laravel/tinker": "^2.5",
         "predis/predis": "^1.1",
-        "spatie/laravel-ray": "^1.17",
-      "ext-yaml": "*"
+        "spatie/laravel-ray": "^1.17"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
